@@ -33,7 +33,7 @@ import static com.android.volley.Request.*;
 * */
 public class MainActivity extends AppCompatActivity {
     // declaring widgets here for example
-    TextView firstName, lastName;
+    TextView firstName, lastName,titleT,genderT,cityT,stateT,countryT,emailT,phoneT,cellT;
     ImageView userProfile;
 
     @Override
@@ -43,14 +43,23 @@ public class MainActivity extends AppCompatActivity {
         userProfile = findViewById(R.id.userProfilePic);
         firstName = findViewById(R.id.firstNameT);
         lastName = findViewById(R.id.lastNameT);
-        // am going to create a timer here to schedule our task - to load or Refresh the data wihtin a specific time period like i takin (10Sec).a new user Data will be appear after every 10sec
+        genderT = findViewById(R.id.GenderT);
+        titleT = findViewById(R.id.userTitleT);
+        cityT = findViewById(R.id.CityT);
+        stateT = findViewById(R.id.StateT);
+        countryT = findViewById(R.id.CountryT);
+        emailT = findViewById(R.id.EmailT);
+        phoneT = findViewById(R.id.PhoneT);
+        cellT = findViewById(R.id.CellT);
+
+        // am going to create a timer here to schedule our task - to load or Refresh the data wihtin a specific time period like i takin (5Sec).a new user Data will be appear after every 5sec
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 //am calling a user-Defined method here- which will be written outside of our "onCreate"_Method and will executed when call it here
                 userGetter();
             }
-        },0,10000);
+        },0,5000);
 
 
 
@@ -81,15 +90,26 @@ public class MainActivity extends AppCompatActivity {
                     /*According to this code we are geting 1-Image and User's 2-firstName and 3-lastName
                     *show then in our App  */
                     JSONArray resultsArray = response.getJSONArray("results"); //we are getting the main Array(in which our all data is stored/displaying) from our Json Data
-                    JSONObject userPictures = resultsArray.getJSONObject(0); //we are creating and attaching an JsonObject with our MainArray - to get UserProfile-Picture
-                    JSONObject pictureObjectO = userPictures.getJSONObject("picture"); /*we are giving our picture Holder Object-Name (which is written as "picture" in json)
+                    JSONObject mainResultArray = resultsArray.getJSONObject(0); //we are creating and attaching an JsonObject with our MainArray - to get UserProfile-Picture
+                    JSONObject pictureObjectO = mainResultArray.getJSONObject("picture"); /*we are giving our picture Holder Object-Name (which is written as "picture" in json)
                                                                                        to JsonObject which we had created before "userPictures" on line_number:83  */
                     String userPicUrl = pictureObjectO.getString("large");  /* here we are creating a String to get the url link (from the pictureObject we created before) of our desired picture -
                                                                                 there were three sizes of pictures on json api page (large,medium,thumbnail) i select the "large"*/
                     JSONObject Name = resultsArray.getJSONObject(0); //creating and attching the JsonObject with Main JsonArray
-                    JSONObject UserNamesT= Name.getJSONObject("name"); //giving json JsonObject  Name . it "name" on json data. and name has further two Object (first) for first_name and (last) for last_name.
+                    JSONObject UserNamesT= Name.getJSONObject("name");//giving json JsonObject  Name . it "name" on json data. and name has further two Object (first) for first_name and (last) for last_name.
                     String firstNameU = UserNamesT.getString("first"); //creating string to get the first_name of user
                     String lastNameU = UserNamesT.getString("last"); // creating string to get the last name of user
+
+                    titleT.setText(UserNamesT.getString("title"));
+                    genderT.setText("Gender : " + mainResultArray.getString("gender"));
+                    emailT.setText("Email : " + mainResultArray.getString("email"));
+                    phoneT.setText("Phone : " + mainResultArray.getString("phone"));
+                    cellT.setText("Cell Phone : "+ mainResultArray.getString("cell"));
+
+                    JSONObject locationDetails = mainResultArray.getJSONObject("location");
+                    cityT.setText("City : "+ locationDetails.getString("city"));
+                    stateT.setText("State : "+ locationDetails.getString("state"));
+                    countryT.setText("Country : "+ locationDetails.getString("country"));
 
                     // now we are going to set our user_profile-picture and name (first and Last) to our Views
                     Picasso.get().load(userPicUrl).into(userProfile); /*we used "Picasso Plugin to get the image from a Url and show then into our app's ImageView Widget.
